@@ -37,6 +37,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found."));
     }
 
+    public User findByEmailForAuth(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid credentials."));
+    }
+
     @Transactional
     public User createUser(UserCreateDTO data) {
 
