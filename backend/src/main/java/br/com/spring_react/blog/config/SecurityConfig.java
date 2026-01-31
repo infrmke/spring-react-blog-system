@@ -3,6 +3,7 @@ package br.com.spring_react.blog.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
@@ -36,6 +38,14 @@ public class SecurityConfig {
                         // rotas privadas (precisa estar logado)
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/{id}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/slug/{postSlug}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/author/{authorSlug}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/search").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/posts").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/posts/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/posts/{id}").authenticated()
                         .requestMatchers(HttpMethod.GET, "/sessions/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/sessions/logout").authenticated()
 
