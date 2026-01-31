@@ -11,6 +11,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /* EXCEÇÕES GENÉRICAS */
+
     // lida com ROTAS QUE NÃO EXISTEM
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NoHandlerFoundException ex) {
@@ -23,6 +25,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return ErrorResponse.build(HttpStatus.BAD_REQUEST, msg, "VALIDATION_ERROR", null);
+    }
+
+    // fallback pra qualquer outro erro (500)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
+        return ErrorResponse.build(HttpStatus.INTERNAL_SERVER_ERROR, "There was an unexpected " +
+                "error. " +
+                "Try again later.", "INTERNAL_SERVER_ERROR", ex);
     }
 
     /* EXCEÇÕES PERSONALIZADAS */
@@ -44,13 +54,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
         return ErrorResponse.build(HttpStatus.CONFLICT, ex.getMessage(), "RESOURCE_ALREADY_EXISTS"
                 , ex);
-    }
-
-    // fallback pra qualquer outro erro (500)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
-        return ErrorResponse.build(HttpStatus.INTERNAL_SERVER_ERROR, "There was an unexpected " +
-                "error. " +
-                "Try again later.", "INTERNAL_SERVER_ERROR", ex);
     }
 }
