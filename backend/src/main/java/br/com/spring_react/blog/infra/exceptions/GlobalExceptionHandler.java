@@ -25,10 +25,32 @@ public class GlobalExceptionHandler {
         return ErrorResponse.build(HttpStatus.BAD_REQUEST, msg, "VALIDATION_ERROR", null);
     }
 
+    /* EXCEÇÕES PERSONALIZADAS */
+
+    // lida com RESTRIÇÃO DE ACESSO
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenAction(ForbiddenActionException ex) {
+        return ErrorResponse.build(HttpStatus.FORBIDDEN, ex.getMessage(), "FORBIDDEN_ACTION", ex);
+    }
+
+    // lida com RECURSO NÃO ENCONTRADO
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ErrorResponse.build(HttpStatus.NOT_FOUND, ex.getMessage(), "RESOURCE_NOT_FOUND", ex);
+    }
+
+    // lida com DUPLICIDADE DE RECURSO
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
+        return ErrorResponse.build(HttpStatus.CONFLICT, ex.getMessage(), "RESOURCE_ALREADY_EXISTS"
+                , ex);
+    }
+
     // fallback pra qualquer outro erro (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
-        return ErrorResponse.build(HttpStatus.INTERNAL_SERVER_ERROR, "There was an unexpected error. " +
+        return ErrorResponse.build(HttpStatus.INTERNAL_SERVER_ERROR, "There was an unexpected " +
+                "error. " +
                 "Try again later.", "INTERNAL_SERVER_ERROR", ex);
     }
 }
