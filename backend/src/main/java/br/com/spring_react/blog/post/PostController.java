@@ -5,12 +5,15 @@ import br.com.spring_react.blog.post.internal.PostMapper;
 import br.com.spring_react.blog.user.MessageResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,17 +27,18 @@ public class PostController {
     }
 
     @GetMapping // GET /posts
-    public ResponseEntity<Object> getAllPosts() {
-        List<Post> posts = postService.findAllPosts();
+    public ResponseEntity<Object> getAllPosts(@PageableDefault(size = 10, sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> postsPage = postService.findAllPosts(pageable);
 
-        if (posts.isEmpty()) {
+        if (postsPage.isEmpty()) {
             return ResponseEntity.ok(new MessageResponse("There are no recorded posts."));
         }
 
-        List<PostDetailsDTO> dtos =
-                posts.stream().map(post -> PostMapper.toDetailsDTO(post)).toList();
+        Page<PostDetailsDTO> dtoPage =
+                postsPage.map(post -> PostMapper.toDetailsDTO(post));
 
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @GetMapping("/{id}") // GET /posts/{id}
@@ -50,33 +54,35 @@ public class PostController {
     }
 
     @GetMapping("/author/{authorSlug}") // GET /posts/author/authorSlug
-    public ResponseEntity<Object> getAllPostsByAuthor(@PathVariable String authorSlug) {
-        List<Post> posts = postService.findByAuthor(authorSlug);
+    public ResponseEntity<Object> getAllPostsByAuthor(@PathVariable String authorSlug, @PageableDefault(size = 10, sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> postsPage = postService.findByAuthor(authorSlug, pageable);
 
-        if (posts.isEmpty()) {
+        if (postsPage.isEmpty()) {
             return ResponseEntity.ok(new MessageResponse("There are no recorded posts from this " +
                     "author yet."));
         }
 
-        List<PostDetailsDTO> dtos =
-                posts.stream().map(post -> PostMapper.toDetailsDTO(post)).toList();
+        Page<PostDetailsDTO> dtoPage =
+                postsPage.map(post -> PostMapper.toDetailsDTO(post));
 
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @GetMapping("/search") // GET /posts/search?title=...
-    public ResponseEntity<Object> getAllPostsByTitle(@RequestParam String title) {
-        List<Post> posts = postService.findByTitle(title);
+    public ResponseEntity<Object> getAllPostsByTitle(@RequestParam String title, @PageableDefault(size = 10, sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> postsPage = postService.findByTitle(title, pageable);
 
-        if (posts.isEmpty()) {
+        if (postsPage.isEmpty()) {
             return ResponseEntity.ok(new MessageResponse("There are no matching results to this " +
                     "search."));
         }
 
-        List<PostDetailsDTO> dtos =
-                posts.stream().map(post -> PostMapper.toDetailsDTO(post)).toList();
+        Page<PostDetailsDTO> dtoPage =
+                postsPage.map(post -> PostMapper.toDetailsDTO(post));
 
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @PostMapping // POST /posts

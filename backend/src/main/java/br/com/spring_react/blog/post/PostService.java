@@ -6,6 +6,8 @@ import br.com.spring_react.blog.post.internal.Post;
 import br.com.spring_react.blog.post.internal.PostRepository;
 import br.com.spring_react.blog.user.UserService;
 import br.com.spring_react.blog.user.internal.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +26,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findAllPosts() {
-        return postRepository.findAll();
+    public Page<Post> findAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -41,13 +43,13 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findByAuthor(String author) {
-        return postRepository.findAllByAuthorSlug(author);
+    public Page<Post> findByAuthor(String author, Pageable pageable) {
+        return postRepository.findAllByAuthorSlug(author, pageable);
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findByTitle(String title) {
-        return postRepository.findByTitleContainingIgnoreCase(title);
+    public Page<Post> findByTitle(String title, Pageable pageable) {
+        return postRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 
     @Transactional

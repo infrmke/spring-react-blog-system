@@ -3,11 +3,14 @@ package br.com.spring_react.blog.user;
 import br.com.spring_react.blog.user.internal.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,19 +24,19 @@ public class UserController {
     }
 
     @GetMapping // GET /users
-    public ResponseEntity<Object> getAllUsers() {
-        List<User> users = userService.findAllUsers();
+    public ResponseEntity<Object> getAllUsers(@PageableDefault(size = 10, sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<User> usersPage = userService.findAllUsers(pageable);
 
-        if (users.isEmpty()) {
+        if (usersPage.isEmpty()) {
             return ResponseEntity.ok(new MessageResponse("There are no registered users."));
         }
 
-        List<UserDTO> dtos = users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail(),
-                        user.getAvatar(), user.getSlug(), user.getRole()))
-                .toList();
+        Page<UserDTO> dtoPage = usersPage.map(user -> new UserDTO(user.getId(), user.getName(),
+                user.getEmail(),
+                user.getAvatar(), user.getSlug(), user.getRole()));
 
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @GetMapping("/{id}") // GET /users/id

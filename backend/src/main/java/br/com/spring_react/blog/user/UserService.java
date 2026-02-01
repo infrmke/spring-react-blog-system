@@ -5,11 +5,12 @@ import br.com.spring_react.blog.infra.exceptions.ResourceAlreadyExistsException;
 import br.com.spring_react.blog.infra.exceptions.ResourceNotFoundException;
 import br.com.spring_react.blog.user.internal.User;
 import br.com.spring_react.blog.user.internal.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,8 +25,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
+    public Page<User> findAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
