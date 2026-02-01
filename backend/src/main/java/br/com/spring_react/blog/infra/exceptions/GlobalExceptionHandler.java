@@ -27,6 +27,16 @@ public class GlobalExceptionHandler {
         return ErrorResponse.build(HttpStatus.BAD_REQUEST, msg, "VALIDATION_ERROR", null);
     }
 
+    // lida com RESTRIÇÃO DE ACESSO
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        return ErrorResponse.build(
+                HttpStatus.FORBIDDEN, "You are not authorized to proceed with this action.",
+                "FORBIDDEN_ACCESS",
+                ex
+        );
+    }
+
     // fallback pra qualquer outro erro (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
