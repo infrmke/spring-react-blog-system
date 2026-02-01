@@ -4,6 +4,9 @@ backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Project Directories ###
+uploads
+
 ### STS ###
 .apt_generated
 .classpath
