@@ -138,9 +138,23 @@ public class UserService {
             throw new ForbiddenActionException("You are not authorized to modify this account.");
         }
 
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found.");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+        // deleta o avatar do usuário se uma imagem física existir
+        if (user.getAvatar() != null && !user.getAvatar().startsWith("http")) {
+            multiPartService.deleteImage("avatars", user.getAvatar());
         }
+
+        // deleta os banners físicos de todos os posts do usuário caso existam
+        if (user.getPosts() != null) {
+            user.getPosts().forEach(post -> {
+                if (post.getBanner() != null && !post.getBanner().startsWith("http")) {
+                    multiPartService.deleteImage("banners", post.getBanner());
+                }
+            });
+        }
+
         userRepository.deleteById(id);
     }
 }

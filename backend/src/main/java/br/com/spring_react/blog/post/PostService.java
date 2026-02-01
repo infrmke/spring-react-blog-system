@@ -128,6 +128,11 @@ public class PostService {
             throw new ForbiddenActionException("You are not authorized to modify this post.");
         }
 
+        // deleta a imagem antiga se ela existir e não for um link (pra salvar espaço)
+        if (post.getBanner() != null && !post.getBanner().startsWith("http")) {
+            multiPartService.deleteImage("banners", post.getBanner());
+        }
+
         postRepository.deleteById(id);
     }
 }
