@@ -103,32 +103,32 @@ public class PostController {
     }
 
     @PatchMapping("/{id}") // PATCH /posts/{id}
-    public ResponseEntity<Object> updatePost(@PathVariable UUID id, HttpServletRequest request,
+    public ResponseEntity<Object> updatePost(@PathVariable("id") UUID postId, HttpServletRequest request,
                                              @RequestBody PostUpdateDTO updateData) {
         String userId = (String) request.getAttribute("userId"); // recuperando o id anexado
 
-        Post updatedPost = postService.updatePost(id, UUID.fromString(userId), updateData);
+        Post updatedPost = postService.updatePost(postId, UUID.fromString(userId), updateData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(PostMapper.toDetailsDTO(updatedPost));
     }
 
     @PatchMapping(value = "/{id}/banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> updateBanner(@PathVariable UUID id,
+    public ResponseEntity<Object> updateBanner(@PathVariable("id") UUID postId,
                                                HttpServletRequest request,
                                                @RequestParam("banner") MultipartFile file) {
         String userId = (String) request.getAttribute("userId");
 
-        Post updatedPost = postService.updateBanner(id, UUID.fromString(userId), file);
+        Post updatedPost = postService.updateBanner(postId, UUID.fromString(userId), file);
 
         return ResponseEntity.ok(new PostBannerResponse("Banner updated successfully.",
                 updatedPost.getBanner()));
     }
 
     @DeleteMapping("/{id}") // DELETE /posts/{id}
-    public ResponseEntity<Object> deletePost(@PathVariable UUID id, HttpServletRequest request) {
+    public ResponseEntity<Object> deletePost(@PathVariable("id") UUID postId, HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId"); // recuperando o id anexado
 
-        postService.deletePost(id, UUID.fromString(userId));
+        postService.deletePost(postId, UUID.fromString(userId));
         return ResponseEntity.noContent().build();
     }
 }
