@@ -1,6 +1,6 @@
 package br.com.spring_react.blog.config;
 
-import br.com.spring_react.blog.session.TokenService;
+import br.com.spring_react.blog.infra.services.TokenService;
 import br.com.spring_react.blog.user.internal.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
