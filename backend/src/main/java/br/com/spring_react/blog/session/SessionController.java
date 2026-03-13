@@ -6,6 +6,7 @@ import br.com.spring_react.blog.user.dto.UserDTO;
 import br.com.spring_react.blog.user.UserService;
 import br.com.spring_react.blog.user.internal.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -55,6 +56,7 @@ public class SessionController {
     }
 
     @PostMapping("/login") // POST /sessions/login
+    @SecurityRequirements(value = {})
     @Operation(summary = "Realiza o login de um usuário", description = "Cria uma nova sessão e " +
             "atribui um token de acesso (JWT) a um cookie httpOnly")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginRequestDTO data,
