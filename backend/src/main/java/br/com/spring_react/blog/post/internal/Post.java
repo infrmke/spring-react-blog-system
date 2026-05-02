@@ -1,6 +1,8 @@
 package br.com.spring_react.blog.post.internal;
 
+import br.com.spring_react.blog.comment.internal.Comment;
 import br.com.spring_react.blog.infra.utils.SlugGenerator;
+import br.com.spring_react.blog.like.internal.PostLike;
 import br.com.spring_react.blog.user.internal.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +45,14 @@ public class Post {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<PostLike> likes;
+
     @Column(name = "created_at", updatable = false)
     @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
@@ -51,7 +62,7 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @PrePersist
-    protected void onCreate(){
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
 
         // cria um slug único para o post (titulo-completo-e-uuid)

@@ -1,6 +1,8 @@
 package br.com.spring_react.blog.user.internal;
 
+import br.com.spring_react.blog.comment.internal.Comment;
 import br.com.spring_react.blog.infra.utils.SlugGenerator;
+import br.com.spring_react.blog.like.internal.PostLike;
 import br.com.spring_react.blog.post.internal.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -53,6 +55,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<PostLike> likes;
 
     @Column(name = "created_at", updatable = false)
     @Setter(AccessLevel.NONE)
