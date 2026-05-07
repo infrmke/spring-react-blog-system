@@ -38,18 +38,18 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Transactional(readOnly = true)
     public User findBySlug(String slug) {
         return userRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public User findByEmailForAuth(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid credentials."));
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
     }
 
     @Transactional
@@ -57,12 +57,12 @@ public class UserService {
 
         // verifica se o usuário já existe
         if (userRepository.findByEmail(data.email()).isPresent()) {
-            throw new ResourceAlreadyExistsException("This e-mail already exists.");
+            throw new ResourceAlreadyExistsException("This e-mail already exists");
         }
 
         // verifica se as senhas correspondem
         if (!data.password().equals(data.confirmPassword())) {
-            throw new RuntimeException("Passwords must match each other.");
+            throw new RuntimeException("Passwords must match each other");
         }
 
         User newUser = new User();
@@ -76,11 +76,11 @@ public class UserService {
     @Transactional
     public User updateUser(UUID id, UUID authenticatedUserId, UserUpdateDTO data) {
         if (!id.equals(authenticatedUserId)) {
-            throw new ForbiddenActionException("You are not authorized to modify this account.");
+            throw new ForbiddenActionException("You are not authorized to modify this account");
         }
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // altera nome se "name" não for null
         if (data.name() != null && !data.name().equals(user.getName())) {
@@ -96,7 +96,7 @@ public class UserService {
         if (data.email() != null && !data.email().equals(user.getEmail())) {
             if (userRepository.findByEmail(data.email()).isPresent()) {
                 // verifica se o usuário já existe
-                throw new ResourceAlreadyExistsException("This e-mail already exists.");
+                throw new ResourceAlreadyExistsException("This e-mail already exists");
             }
             user.setEmail(data.email());
         }
@@ -105,7 +105,7 @@ public class UserService {
         if (data.password() != null) {
             // verifica se as senhas correspondem
             if (!data.password().equals(data.confirmPassword())) {
-                throw new RuntimeException("Passwords must match each other.");
+                throw new RuntimeException("Passwords must match each other");
             }
             user.setPassword(passwordEncoder.encode(data.password()));
         }
@@ -116,11 +116,11 @@ public class UserService {
     @Transactional
     public User updateAvatar(UUID id, UUID authenticatedUserId, MultipartFile file) {
         if (!id.equals(authenticatedUserId)) {
-            throw new ForbiddenActionException("You are not authorized to modify this account.");
+            throw new ForbiddenActionException("You are not authorized to modify this account");
         }
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // deleta a imagem antiga se ela existir e não for um link (pra salvar espaço)
         if (user.getAvatar() != null && !user.getAvatar().startsWith("http")) {
@@ -137,11 +137,11 @@ public class UserService {
     @Transactional
     public void deleteUser(UUID id, UUID authenticatedUserId) {
         if (!id.equals(authenticatedUserId)) {
-            throw new ForbiddenActionException("You are not authorized to modify this account.");
+            throw new ForbiddenActionException("You are not authorized to modify this account");
         }
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // deleta o avatar do usuário se uma imagem física existir
         if (user.getAvatar() != null && !user.getAvatar().startsWith("http")) {

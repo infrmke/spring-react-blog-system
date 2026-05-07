@@ -25,7 +25,7 @@ public class SessionService {
         User user = userService.findByEmailForAuth(data.email());
 
         if (!passwordEncoder.matches(data.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials.");
+            throw new RuntimeException("Invalid credentials");
         }
 
         return tokenService.generateToken(user);

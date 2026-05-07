@@ -39,7 +39,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Comment findById(UUID id) {
         return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(
-                "Comment not found."));
+                "Comment not found"));
     }
 
     @Transactional
@@ -59,10 +59,10 @@ public class CommentService {
     public Comment updateComment(UUID commentId, CommentUpdateDTO data, UUID authenticatedUserId) {
         Comment comment =
                 commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException(
-                        "Comment not found."));
+                        "Comment not found"));
 
         if (!comment.getAuthor().getId().equals(authenticatedUserId)) {
-            throw new ForbiddenActionException("You are not authorized to modify this comment.");
+            throw new ForbiddenActionException("You are not authorized to modify this comment");
         }
 
         if(data.content() != null) {
@@ -76,10 +76,10 @@ public class CommentService {
     public void deleteComment(UUID commentId, UUID authenticatedUserId) {
         Comment comment =
                 commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException(
-                "Comment not found."));
+                "Comment not found"));
 
         if (!comment.getAuthor().getId().equals(authenticatedUserId)) {
-            throw new ForbiddenActionException("You are not authorized to modify this comment.");
+            throw new ForbiddenActionException("You are not authorized to modify this comment");
         }
 
         commentRepository.delete(comment);
