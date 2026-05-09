@@ -155,4 +155,17 @@ public class GlobalExceptionHandler {
                 null
         );
     }
+
+    // lida com EXCEDÊNCIA DE REQUISIÇÕES
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenAction(RateLimitExceededException ex,
+                                                               HttpServletRequest request) {
+        return ErrorResponse.build(
+                "about:blank",
+                HttpStatus.TOO_MANY_REQUESTS,
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+    }
 }
