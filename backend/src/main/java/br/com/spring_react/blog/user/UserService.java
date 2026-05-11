@@ -120,7 +120,7 @@ public class UserService {
 
     @Transactional
     @CacheEvict(value = "profiles", allEntries = true)
-    public User updateAvatar(UUID id, UUID authenticatedUserId, MultipartFile file) {
+    public void updateAvatar(UUID id, UUID authenticatedUserId, MultipartFile file) {
         if (!id.equals(authenticatedUserId)) {
             throw new ForbiddenActionException("You are not authorized to modify this account");
         }
@@ -137,7 +137,7 @@ public class UserService {
         String newFileName = multiPartService.processImage(file, "avatars", 500);
 
         user.setAvatar(newFileName);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Transactional

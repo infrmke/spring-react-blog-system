@@ -117,7 +117,7 @@ public class PostService {
             @CacheEvict(value = "posts", allEntries = true),
             @CacheEvict(value = "authors", allEntries = true)
     })
-    public Post updateBanner(UUID id, UUID authenticatedUserId, MultipartFile file) {
+    public void updateBanner(UUID id, UUID authenticatedUserId, MultipartFile file) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
@@ -134,7 +134,7 @@ public class PostService {
         String newFileName = multiPartService.processImage(file, "banners", 1200);
 
         post.setBanner(newFileName);
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 
     @Transactional
