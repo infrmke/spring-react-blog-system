@@ -9,6 +9,9 @@ import br.com.spring_react.blog.post.internal.Post;
 import br.com.spring_react.blog.post.internal.PostRepository;
 import br.com.spring_react.blog.user.UserService;
 import br.com.spring_react.blog.user.internal.User;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,14 +45,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Post findBySlug(String slug) {
-        return postRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException(
+    @Cacheable(value = "posts", key = "#postSlug")
+    public Post findBySlug(String postSlug) {
+        return postRepository.findBySlug(postSlug).orElseThrow(() -> new ResourceNotFoundException(
                 "Post not found"));
     }
 
     @Transactional(readOnly = true)
-    public Page<Post> findByAuthor(String author, Pageable pageable) {
-        return postRepository.findAllByAuthorSlug(author, pageable);
+    @Cacheable(value = "authors", key = "#authorSlug")
+    public Page<Post> findByAuthor(String authorSlug, Pageable pageable) {
+        return postRepository.findAllByAuthorSlug(authorSlug, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -58,6 +63,10 @@ public class PostService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "posts", allEntries = true),
+            @CacheEvict(value = "authors", allEntries = true)
+    })
     public Post createPost(PostCreateDTO data, UUID authorId) {
         User author = userService.findById(authorId);
 
@@ -76,6 +85,10 @@ public class PostService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "posts", allEntries = true),
+            @CacheEvict(value = "authors", allEntries = true)
+    })
     public Post updatePost(UUID postId, UUID authenticatedUserId, PostUpdateDTO data) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
@@ -100,6 +113,10 @@ public class PostService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "posts", allEntries = true),
+            @CacheEvict(value = "authors", allEntries = true)
+    })
     public Post updateBanner(UUID id, UUID authenticatedUserId, MultipartFile file) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
@@ -121,6 +138,10 @@ public class PostService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "posts", allEntries = true),
+            @CacheEvict(value = "authors", allEntries = true)
+    })
     public void deletePost(UUID id, UUID authenticatedUserId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));

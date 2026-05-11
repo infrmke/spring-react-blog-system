@@ -8,6 +8,9 @@ import br.com.spring_react.blog.user.dto.UserCreateDTO;
 import br.com.spring_react.blog.user.dto.UserUpdateDTO;
 import br.com.spring_react.blog.user.internal.User;
 import br.com.spring_react.blog.user.internal.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +45,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findBySlug(String slug) {
-        return userRepository.findBySlug(slug)
+    @Cacheable(value = "profiles", key = "#userSlug")
+    public User findBySlug(String userSlug) {
+        return userRepository.findBySlug(userSlug)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
@@ -74,6 +78,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "profiles", allEntries = true)
     public User updateUser(UUID id, UUID authenticatedUserId, UserUpdateDTO data) {
         if (!id.equals(authenticatedUserId)) {
             throw new ForbiddenActionException("You are not authorized to modify this account");
@@ -114,6 +119,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "profiles", allEntries = true)
     public User updateAvatar(UUID id, UUID authenticatedUserId, MultipartFile file) {
         if (!id.equals(authenticatedUserId)) {
             throw new ForbiddenActionException("You are not authorized to modify this account");
@@ -135,6 +141,10 @@ public class UserService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "profiles", allEntries = true),
+            @CacheEvict(value = "posts", allEntries = true)
+    })
     public void deleteUser(UUID id, UUID authenticatedUserId) {
         if (!id.equals(authenticatedUserId)) {
             throw new ForbiddenActionException("You are not authorized to modify this account");

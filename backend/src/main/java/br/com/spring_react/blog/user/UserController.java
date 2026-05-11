@@ -69,11 +69,11 @@ public class UserController {
         );
     }
 
-    @GetMapping("/profile/{slug}") // GET /users/profile/slug
+    @GetMapping("/profile/{userSlug}") // GET /users/profile/userSlug
     @Operation(summary = "Lista o usuário solicitado por slug", description = "Retorna os dados " +
             "básicos do usuário associado ao slug providenciado")
-    public ResponseEntity<Object> getUserBySlug(@PathVariable String slug) {
-        User user = userService.findBySlug(slug);
+    public ResponseEntity<Object> getUserBySlug(@PathVariable String userSlug) {
+        User user = userService.findBySlug(userSlug);
 
         return ResponseEntity.ok(
                 new UserDTO(
